@@ -10,3 +10,11 @@
 ```
 $ ./gradlew run
 ```
+
+## Output example
+
+```
+in file 2011-08-13-2.md:
+# loading dict
+# loaded dict in  8.759sec, memory used 790.290MB
+```

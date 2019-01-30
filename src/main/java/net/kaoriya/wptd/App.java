@@ -18,16 +18,27 @@ public class App {
 
     static final String TEXTDIR = "build/text";
 
+    static double MEGABYTES = 1024 * 1024;
+
     AhoCorasick<Boolean> cache;
 
     AhoCorasick<Boolean> loadDict() throws IOException {
         if (this.cache == null) {
             System.err.println("# loading dict");
+            Runtime rt = Runtime.getRuntime();
+            System.gc();
+            System.gc();
+
             long start = System.nanoTime();
             this.cache = loadDict(new File(DICT));
-            long elapsed = System.nanoTime() - start;
-            double seconds = elapsed / 1e9;
-            System.err.printf("# loaded dict in %6.3fsec\n", seconds);
+            double seconds = (System.nanoTime() - start) / 1e9;
+
+            System.gc();
+            System.gc();
+            long mem = rt.totalMemory() - rt.freeMemory();
+            System.err.printf(
+                    "# loaded dict in %6.3fsec, memory used %.3fMB\n",
+                    seconds, mem / MEGABYTES);
         }
         return this.cache;
     }
@@ -56,7 +67,7 @@ public class App {
         aho.match(text, new MatchHandler<Boolean>() {
             @Override
             public boolean matched(int index, String pattern, Boolean value) {
-                System.out.printf("- found \"%s\" at index %d\n", pattern, index);
+                //System.out.printf("- found \"%s\" at index %d\n", pattern, index);
                 return true;
             }
         }, 0);
