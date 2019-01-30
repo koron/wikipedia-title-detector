@@ -56,7 +56,7 @@ public class App {
         aho.match(text, new MatchHandler<Boolean>() {
             @Override
             public boolean matched(int index, String pattern, Boolean value) {
-                //System.out.printf("- found \"%s\" at index %d\n", pattern, index);
+                System.out.printf("- found \"%s\" at index %d\n", pattern, index);
                 return true;
             }
         }, 0);

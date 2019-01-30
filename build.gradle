@@ -29,3 +29,7 @@ dependencies {
 
 // Define the main class for the application
 mainClassName = 'net.kaoriya.wptd.App'
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
