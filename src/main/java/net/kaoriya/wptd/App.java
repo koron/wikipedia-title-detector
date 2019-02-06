@@ -5,8 +5,9 @@ package net.kaoriya.wptd;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 
 import net.kaoriya.ugmatcha2.AhoCorasick;
@@ -15,6 +16,7 @@ import net.kaoriya.ugmatcha2.MatchHandler;
 public class App {
 
     static final String DICT = "build/dict/jawiki-20190120-all-titles-in-ns0";
+    //static final String DICT = "build/dict/dict0";
 
     static final String TEXTDIR = "build/text";
 
@@ -45,32 +47,59 @@ public class App {
 
     AhoCorasick<Boolean> loadDict(File f) throws IOException {
         AhoCorasick<Boolean> aho = new AhoCorasick<>();
-        try (BufferedReader r = new BufferedReader(new FileReader(f))) {
+        System.err.printf("# from file: %s\n", f.getName());
+        long count = 0;
+        long start = System.nanoTime();
+        try (BufferedReader r = new BufferedReader(new InputStreamReader(new FileInputStream(f), "UTF-8"))) {
             String line;
             while ((line = r.readLine()) != null) {
+                //System.out.printf("- added \"%s\" (%d)\n", line, line.length());
                 aho.add(line, Boolean.TRUE);
+                count++;
             }
         }
+        System.err.printf("# loaded %d words in %.3fsec\n", count, (System.nanoTime() - start) / 1e9);
+        start = System.nanoTime();
         aho.compile();
+        System.err.printf("# compiled in %.3fsec\n", (System.nanoTime() - start) / 1e9);
         return aho;
     }
 
     public void find(File f) throws Exception {
         System.out.printf("in file %s:\n", f.getName());
+        System.err.printf("# finding in file %s\n", f.getName());
         byte[] b = Files.readAllBytes(f.toPath());
         String text= new String(b, "UTF-8");
-        find(text);
+        Stat stat = find(text);
+        System.err.printf("# found %d words in %.3fsec, memory used: %.3fMB\n", stat.count, stat.elapsedNano / 1e9, stat.memBytes / MEGABYTES);
     }
 
-    public void find(String text) throws Exception {
+    public static class Stat {
+        public long count;
+        public long elapsedNano;
+        public long memBytes;
+    }
+
+    public Stat find(String text) throws Exception {
         AhoCorasick<Boolean> aho = loadDict();
+        final Stat stat = new Stat();
+        Runtime rt = Runtime.getRuntime();
+        System.gc();
+        System.gc();
+        long start = System.nanoTime();
         aho.match(text, new MatchHandler<Boolean>() {
             @Override
             public boolean matched(int index, String pattern, Boolean value) {
-                //System.out.printf("- found \"%s\" at index %d\n", pattern, index);
+                System.out.printf("- found \"%s\" at index %d\n", pattern, index);
+                stat.count++;
                 return true;
             }
         }, 0);
+        stat.elapsedNano = System.nanoTime() - start;
+        System.gc();
+        System.gc();
+        stat.memBytes =  rt.totalMemory() - rt.freeMemory();
+        return stat;
     }
 
     public static void main(String[] args) throws Exception {
