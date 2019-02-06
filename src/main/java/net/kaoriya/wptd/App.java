@@ -54,6 +54,9 @@ public class App {
             String line;
             while ((line = r.readLine()) != null) {
                 //System.out.printf("- added \"%s\" (%d)\n", line, line.length());
+                if (line.length() < 2) {
+                    continue;
+                }
                 aho.add(line, Boolean.TRUE);
                 count++;
             }
