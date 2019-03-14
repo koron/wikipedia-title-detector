@@ -132,7 +132,7 @@ public class App {
     public static void main(String[] args) throws Exception {
         App app = new App();
         //app.app0();
-        app.app1(new File("testdata/hotentry-20190306T1059JST.txt"),
-                System.out);
+        //app.app1(new File("testdata/hotentry-20190306T1059JST.txt"), System.out);
+        app.app1(new File("tmp/mid.txt"), System.out);
     }
 }
