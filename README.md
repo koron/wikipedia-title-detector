@@ -43,3 +43,6 @@ $ wc -l build/dict/jawiki-20190120-all-titles-in-ns0
 *   How to use dictionaries
     *   [Layout of Database](https://www.mediawiki.org/wiki/Manual:Database_layout/ja)
     *   <http://www.mwsoft.jp/programming/munou/wikipedia_data_list.html>
+*   Wikipedia data
+    *   Japanese <https://dumps.wikimedia.org/jawiki/>
+    *   English: <https://dumps.wikimedia.org/enwiki/>
